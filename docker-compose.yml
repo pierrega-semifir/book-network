@@ -1,0 +1,43 @@
+services:
+
+  adminer:
+    image: adminer
+    restart: always
+    depends_on:
+      - mysql
+    ports:
+      - 8080:8080
+    networks:
+      - sql_base
+
+  mysql:
+    container_name: mysql_sql_base
+    image: mysql:8.0
+    environment:
+        MYSQL_ROOT_PASSWORD: root
+        MYSQL_DATABASE: sql_base
+        MYSQL_USER: example
+        MYSQL_PASSWORD: example
+    ports:
+        - "3308:3306"
+    networks:
+        - sql_base
+    restart: always
+
+  maildev:
+    container_name: mail-dev-base
+    image: maildev/maildev
+    ports:
+        - "1080:1080"
+        - "1025:1025"
+    networks:
+        - sql_base
+    restart: unless-stopped
+
+networks:
+    sql_base:
+        driver: bridge
+
+volumes:
+    mysql:
+      driver: local
